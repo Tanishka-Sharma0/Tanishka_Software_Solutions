@@ -21,11 +21,11 @@ app.use(express.urlencoded({ extended: true }));
 connectDB();
 
 app.use("/api/auth", authRoutes);
-app.use("/api/user", userRoutes);
-app.use("/api/service", serviceRoutes);
-app.use("/api/serviceRequest", serviceRequestRoutes);
-app.use("/api/project", projectRoutes);
-app.use("/api/message", messageRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/services", serviceRoutes);
+app.use("/api/service-requests", serviceRequestRoutes);
+app.use("/api/projects", projectRoutes);
+app.use("/api/messages", messageRoutes);
 
 const PORT = process.env.PORT || 5000;
 

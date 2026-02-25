@@ -4,24 +4,25 @@ import User from "../models/User.js";
 const getProjects = async (req, res) => {
     try {
         let query = {};
+
         if (req.user.role === 'client') {
             query.client = req.user._id;
         } else if (req.user.role === 'employee') {
-            query.assignEmployees = req.user._id;
+            query.assignedEmployees = { $in: [req.user._id] };
         }
-
 
         const projects = await Project.find(query)
             .populate('client', 'name companyName')
             .populate('service', 'name')
-            .populate('assignEmployees', 'name email')
+            .populate('assignedEmployees', 'name email')
             .populate('createdBy', 'name');
-        res.json(projects);
 
+        res.json(projects);
     } catch (error) {
+        console.error('Get projects error:', error);
         res.status(500).json({ message: error.message });
     }
-}
+};
 
 const createProject = async (req, res) => {
     try {
@@ -45,10 +46,44 @@ const createProject = async (req, res) => {
     }
 }
 
+
+const getProjectById = async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.id)
+            .populate('client', 'name companyName email phone')
+            .populate('service', 'name description price duration')
+            .populate('assignedEmployees', 'name email role')
+            .populate('createdBy', 'name email');
+
+        if (!project) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+
+        // Check authorization
+        if (req.user.role === 'client' && project.client._id.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Not authorized to view this project' });
+        }
+
+        if (req.user.role === 'employee') {
+            const isAssigned = project.assignedEmployees.some(
+                emp => emp._id.toString() === req.user._id.toString()
+            );
+            if (!isAssigned) {
+                return res.status(403).json({ message: 'You are not assigned to this project' });
+            }
+        }
+
+        res.json(project);
+    } catch (error) {
+        console.error('Get project by id error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const updateProjectStatus = async (req, res) => {
     try {
         const { status } = req.body;
-        const project = await project.findById(req.params.id);
+        const project = await Project.findById(req.params.id);
         if (!project) {
             return res.status(404).json({ message: 'Project not found' });
         }
@@ -84,4 +119,4 @@ const assignEmployees = async (req, res) => {
 }
 
 
-export { getProjects, createProject, updateProjectStatus, assignEmployees };
+export { getProjects, createProject, updateProjectStatus, assignEmployees, getProjectById };

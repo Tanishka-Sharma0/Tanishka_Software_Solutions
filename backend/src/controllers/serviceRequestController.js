@@ -11,6 +11,8 @@ const getRequests = async (req, res) => {
             .populate('client', 'name companyName')
             .populate('service', 'name')
             .populate('project');
+
+        res.json(requests);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -38,17 +40,19 @@ const approveRequest = async (req, res) => {
         request.status = 'approved';
         await request.save();
 
-        // Creating project from approved request
         const project = await Project.create({
-            name: `${request.client.companyName}` - `${request.service.name}`,
+            name: request.client.companyName + ' - ' + request.service.name,
             description: request.description,
             client: request.client._id,
             service: request.service._id,
             status: 'pending',
             createdBy: req.user._id,
         });
+
         request.project = project._id;
         await request.save();
+
+        res.json({ message: 'Request approved', request, project });
 
     } catch (error) {
         res.status(500).json({ message: error.message });

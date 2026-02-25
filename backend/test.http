@@ -1,0 +1,828 @@
+### =================================================================
+### RAHUL SOFTWARE SOLUTIONS - COMPLETE API TEST SUITE
+### Base URL: http://localhost:5000
+### REST Client for VS Code
+### =================================================================
+
+@baseUrl = http://localhost:5000
+
+### =================================================================
+### 1. AUTHENTICATION TESTS
+### =================================================================
+
+### 1.1 Register New User (Employee)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Test Employee",
+    "email": "test.employee@example.com",
+    "password": "Test@123",
+    "role": "employee",
+    "phone": "9876543210"
+}
+
+### 1.2 Register New Client
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Test Client User",
+    "email": "test.client@example.com",
+    "password": "Test@123",
+    "role": "client",
+    "companyName": "Test Company Pvt Ltd",
+    "phone": "1234567890"
+}
+
+### 1.3 Login as Admin (Save Token) - RUN THIS FIRST
+# @name adminLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@rahulsoftware.com",
+    "password": "Admin@123"
+}
+
+### Store Admin Token
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OWVlNTc5YTYzMmZkMTM2OWNjOGE0YyIsImlhdCI6MTc3MjAyMTEzNiwiZXhwIjoxNzc0NjEzMTM2fQ.uhVTLjsSUIo0glpLgQGZbvFzUl_SqGn-bk0i5Za3P44
+
+### 1.4 Login as Employee
+# @name employeeLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test.employee@example.com",
+  "password": "Test@123"
+}
+
+### Store Employee Token
+@employeeToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OWVlNWFlYTYzMmZkMTM2OWNjOGE1MiIsImlhdCI6MTc3MjAyMTcyNiwiZXhwIjoxNzc0NjEzNzI2fQ.DnnoTeyY3KHlRZP91VUQQ0usWna2olJE_V4kQibVh3M
+
+### 1.5 Login as Client
+# @name clientLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test.client@example.com",
+  "password": "Test@123"
+}
+
+### Store Client Token
+@clientToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OWVlODk1YTYzMmZkMTM2OWNjOGE1OCIsImlhdCI6MTc3MjAyMTkxNiwiZXhwIjoxNzc0NjEzOTE2fQ.5J9t3Y9x8cI1Jih-mZ4iTHWP3TObOkgsJA7d3KHXZ0I
+
+### =================================================================
+### 2. TEST WITH ADMIN TOKEN (Should Work Now)
+### =================================================================
+
+### Get All Users 
+GET {{baseUrl}}/api/users
+Authorization: Bearer {{adminToken}}
+
+### 2.2 Try Get Users with Employee Token (Should Fail - 403)
+GET {{baseUrl}}/api/users
+Authorization: Bearer {{employeeToken}}
+
+### 2.3 Try Get Users with Client Token (Should Fail - 403)
+GET {{baseUrl}}/api/users
+Authorization: Bearer {{clientToken}}
+
+### 2.4 Create New Employee (Admin)
+# @name createEmployee
+POST {{baseUrl}}/api/users
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "John Doe Employee",
+    "email": "john.doe@company.com",
+    "password": "John@123",
+    "role": "employee",
+    "phone": "1112223333"
+}
+
+### Store Created Employee ID
+@newEmployeeId = 699ee8c0a632fd1369cc8a5e
+
+### 2.5 Create New Client (Admin)
+# @name createClient
+POST {{baseUrl}}/api/users
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "Jane Smith",
+    "email": "jane.smith@client.com",
+    "password": "Jane@123",
+    "role": "client",
+    "companyName": "Smith Enterprises",
+    "phone": "4445556666"
+}
+
+### Store Created Client ID
+@newClientId = 699ee8f4a632fd1369cc8a66
+
+### 2.6 Create User with Existing Email (Should Fail - 400)
+POST {{baseUrl}}/api/users
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "Duplicate User",
+    "email": "john.doe@company.com",
+    "password": "Test@123",
+    "role": "employee"
+}
+
+### 2.7 Create User without Required Fields (Should Fail - 400)
+POST {{baseUrl}}/api/users
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "Incomplete User"
+}
+
+### 2.8 Update Profile (Admin)
+PUT {{baseUrl}}/api/users/profile
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "Admin Updated Name",
+    "phone": "9998887776"
+}
+
+### 2.9 Update Profile with Password (Admin)
+PUT {{baseUrl}}/api/users/profile
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "Admin User",
+    "phone": "1234567890",
+    "password": "NewAdmin@123"
+}
+
+### 2.10 Update Profile (Employee)
+PUT {{baseUrl}}/api/users/profile
+Authorization: Bearer {{employeeToken}}
+Content-Type: application/json
+
+{
+    "name": "Employee Updated",
+    "phone": "7778889990"
+}
+
+### 2.11 Update Profile (Client)
+PUT {{baseUrl}}/api/users/profile
+Authorization: Bearer {{clientToken}}
+Content-Type: application/json
+
+{
+    "name": "Client Updated",
+    "phone": "6667778881",
+    "companyName": "Updated Company Ltd"
+}
+
+### 2.12 Delete Employee (Admin)
+DELETE {{baseUrl}}/api/users/{{newEmployeeId}}
+Authorization: Bearer {{adminToken}}
+
+### 2.13 Delete Client (Admin)
+DELETE {{baseUrl}}/api/users/{{newClientId}}
+Authorization: Bearer {{adminToken}}
+
+### 2.14 Try Delete Admin (Should Fail - 403)
+DELETE {{baseUrl}}/api/users/ADMIN_ID_HERE
+Authorization: Bearer {{adminToken}}
+
+### 2.15 Try Delete User without Admin Token (Should Fail - 403)
+DELETE {{baseUrl}}/api/users/{{newEmployeeId}}
+Authorization: Bearer {{employeeToken}}
+
+### =================================================================
+### 3. SERVICE MANAGEMENT TESTS (ADMIN ONLY)
+### =================================================================
+
+### 3.1 Get All Services (Any Authenticated User)
+GET {{baseUrl}}/api/services
+Authorization: Bearer {{adminToken}}
+
+### 3.2 Get Services as Employee
+GET {{baseUrl}}/api/services
+Authorization: Bearer {{employeeToken}}
+
+### 3.3 Get Services as Client
+GET {{baseUrl}}/api/services
+Authorization: Bearer {{clientToken}}
+
+### 3.4 Create Web Development Service (Admin)
+# @name createService1
+POST {{baseUrl}}/api/services
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "Web Development",
+    "description": "Complete full-stack web application development including frontend, backend, and database",
+    "price": 5000,
+    "duration": "3 months"
+}
+
+### Store Service ID
+@service1Id = 699f3608a5c4a30109ab692a
+
+### 3.5 Create Mobile App Service (Admin)
+# @name createService2
+POST {{baseUrl}}/api/services
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "Mobile App Development",
+    "description": "iOS and Android app development using React Native",
+    "price": 8000,
+    "duration": "4 months"
+}
+
+### Store Service ID
+@service2Id = 699f3642a5c4a30109ab6930
+
+### 3.6 Create Cloud Service (Admin)
+# @name createService3
+POST {{baseUrl}}/api/services
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "Cloud Consulting",
+    "description": "AWS/Azure/GCP architecture design and implementation",
+    "price": 3000,
+    "duration": "1 month"
+}
+
+### Store Service ID
+@service3Id = 699f3652a5c4a30109ab6933
+
+### 3.7 Create UI/UX Design Service (Admin)
+POST {{baseUrl}}/api/services
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "UI/UX Design",
+    "description": "User interface and experience design for web and mobile apps",
+    "price": 2000,
+    "duration": "2 weeks"
+}
+
+### 3.8 Create Service without Name (Should Fail - 400)
+POST {{baseUrl}}/api/services
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "description": "Missing name field",
+    "price": 1000
+}
+
+### 3.9 Try Create Service as Employee (Should Fail - 403)
+POST {{baseUrl}}/api/services
+Authorization: Bearer {{employeeToken}}
+Content-Type: application/json
+
+{
+    "name": "Unauthorized Service",
+    "description": "This should not work",
+    "price": 1000,
+    "duration": "1 month"
+}
+
+### 3.10 Delete Service (Admin)
+DELETE {{baseUrl}}/api/services/{{service3Id}}
+Authorization: Bearer {{adminToken}}
+
+### 3.11 Try Delete Service as Client (Should Fail - 403)
+DELETE {{baseUrl}}/api/services/{{service1Id}}
+Authorization: Bearer {{clientToken}}
+
+### =================================================================
+### 4. SERVICE REQUEST TESTS (CLIENT ONLY FOR CREATION)
+### =================================================================
+
+### 4.1 Get All Service Requests (Admin)
+GET {{baseUrl}}/api/service-requests
+Authorization: Bearer {{adminToken}}
+
+### 4.2 Get Service Requests as Client (Only Their Requests)
+GET {{baseUrl}}/api/service-requests
+Authorization: Bearer {{clientToken}}
+
+### 4.3 Create Service Request (Client)
+# @name createRequest1
+POST {{baseUrl}}/api/service-requests
+Authorization: Bearer {{clientToken}}
+Content-Type: application/json
+
+{
+    "service": "{{service1Id}}",
+    "description": "Need an e-commerce website with payment gateway integration and admin panel"
+}
+
+### Store Request ID
+@request1Id = 699f372ba5c4a30109ab6978
+
+### 4.4 Create Another Service Request (Client)
+# @name createRequest2
+POST {{baseUrl}}/api/service-requests
+Authorization: Bearer {{clientToken}}
+Content-Type: application/json
+
+{
+    "service": "{{service2Id}}",
+    "description": "Need a mobile app for food delivery with real-time tracking"
+}
+
+### Store Request ID
+@request2Id = 699f37daa5c4a30109ab697b
+
+### 4.5 Try Create Request as Employee (Should Fail - 403)
+POST {{baseUrl}}/api/service-requests
+Authorization: Bearer {{employeeToken}}
+Content-Type: application/json
+
+{
+    "service": "{{service1Id}}",
+    "description": "Employee trying to create request"
+}
+
+### 4.6 Create Request with Invalid Service ID (Should Fail - 500)
+POST {{baseUrl}}/api/service-requests
+Authorization: Bearer {{clientToken}}
+Content-Type: application/json
+
+{
+    "service": "invalid-service-id-123",
+    "description": "Test request"
+}
+
+### 4.7 Approve First Request (Admin) - This Creates Project Automatically
+PUT {{baseUrl}}/api/service-requests/{{request1Id}}/approve
+Authorization: Bearer {{adminToken}}
+
+### 4.8 Approve Second Request (Admin) - This Creates Project Automatically
+PUT {{baseUrl}}/api/service-requests/{{request2Id}}/approve
+Authorization: Bearer {{adminToken}}
+
+### 4.9 Try Approve Request as Employee (Should Fail - 403)
+PUT {{baseUrl}}/api/service-requests/{{request1Id}}/approve
+Authorization: Bearer {{employeeToken}}
+
+### 4.10 Try Approve Non-existent Request (Should Fail - 404)
+PUT {{baseUrl}}/api/service-requests/123456789012345678901234/approve
+Authorization: Bearer {{adminToken}}
+
+### =================================================================
+### 5. PROJECT MANAGEMENT TESTS
+### =================================================================
+
+### 5.1 Get All Projects (Admin - Sees All)
+GET {{baseUrl}}/api/projects
+Authorization: Bearer {{adminToken}}
+
+### 5.2 Get Projects as Employee (Only Assigned)
+GET {{baseUrl}}/api/projects
+Authorization: Bearer {{employeeToken}}
+
+### 5.3 Get Projects as Client (Only Their Projects)
+GET {{baseUrl}}/api/projects
+Authorization: Bearer {{clientToken}}
+
+### 5.4 Create Project Directly (Admin)
+# @name createProject
+POST {{baseUrl}}/api/projects
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "Custom E-commerce Project",
+    "description": "Direct project creation for testing",
+    "client": "{{newClientId}}",
+    "service": "{{service1Id}}",
+    "startDate": "2024-03-01",
+    "deadline": "2024-06-01"
+}
+
+### Store Project ID
+@projectId = 699f3883a5c4a30109ab69ba
+
+### 5.5 Try Create Project as Employee (Should Fail - 403)
+POST {{baseUrl}}/api/projects
+Authorization: Bearer {{employeeToken}}
+Content-Type: application/json
+
+{
+    "name": "Employee Project",
+    "description": "Should not work",
+    "client": "{{newClientId}}",
+    "service": "{{service1Id}}"
+}
+
+### 5.6 Update Project Status (Admin)
+PUT {{baseUrl}}/api/projects/{{projectId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "status": "in-progress"
+}
+
+### 5.7 Update Project Status to In-Progress (Employee)
+PUT {{baseUrl}}/api/projects/{{projectId}}/status
+Authorization: Bearer {{employeeToken}}
+Content-Type: application/json
+
+{
+    "status": "in-progress"
+}
+
+### 5.8 Update Project Status to Completed (Employee)
+PUT {{baseUrl}}/api/projects/{{projectId}}/status
+Authorization: Bearer {{employeeToken}}
+Content-Type: application/json
+
+{
+    "status": "completed"
+}
+
+### 5.9 Update Project Status to On-Hold (Admin)
+PUT {{baseUrl}}/api/projects/{{projectId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "status": "on-hold"
+}
+
+### 5.10 Try Update Status as Client (Should Fail - 403)
+PUT {{baseUrl}}/api/projects/{{projectId}}/status
+Authorization: Bearer {{clientToken}}
+Content-Type: application/json
+
+{
+    "status": "completed"
+}
+
+### 5.11 Update with Invalid Status (Should Fail - 500)
+PUT {{baseUrl}}/api/projects/{{projectId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "status": "invalid-status"
+}
+
+### 5.12 Assign Employees to Project (Admin)
+PUT {{baseUrl}}/api/projects/{{projectId}}/assign
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "employeeIds": [
+        "{{newEmployeeId}}",
+        "65f8a1b2c3d4e5f6a7b8c9d6"
+    ]
+}
+
+### 5.13 Try Assign Employees as Employee (Should Fail - 403)
+PUT {{baseUrl}}/api/projects/{{projectId}}/assign
+Authorization: Bearer {{employeeToken}}
+Content-Type: application/json
+
+{
+    "employeeIds": ["{{newEmployeeId}}"]
+}
+
+### 5.14 Get Specific Project Details
+GET {{baseUrl}}/api/projects/{{projectId}}
+Authorization: Bearer {{adminToken}}
+
+### 5.15 Get Non-existent Project (Should Fail - 404)
+GET {{baseUrl}}/api/projects/123456789012345678901234
+Authorization: Bearer {{adminToken}}
+
+
+### =================================================================
+### PROJECT BY ID TEST CASES
+### =================================================================
+
+### 5.16 Get Project by ID (Admin)
+GET {{baseUrl}}/api/projects/699f3876a5c4a30109ab69b2
+Authorization: Bearer {{adminToken}}
+
+### 5.17 Get Project by ID (Employee - Only if assigned)
+GET {{baseUrl}}/api/projects/699f3876a5c4a30109ab69b2
+Authorization: Bearer {{employeeToken}}
+
+### 5.18 Get Project by ID (Client - Only their own project)
+GET {{baseUrl}}/api/projects/699f3876a5c4a30109ab69b2
+Authorization: Bearer {{clientToken}}
+
+### 5.19 Get Project with Invalid ID (Should Fail - 404)
+GET {{baseUrl}}/api/projects/invalid-project-id-123
+Authorization: Bearer {{adminToken}}
+
+### 5.20 Get Project with Wrong ID Format (Should Fail - 500)
+GET {{baseUrl}}/api/projects/12345
+Authorization: Bearer {{adminToken}}
+
+### =================================================================
+### 6. MESSAGING SYSTEM TESTS
+### =================================================================
+
+### 6.1 Get All Conversations (Admin)
+GET {{baseUrl}}/api/messages/conversations
+Authorization: Bearer {{adminToken}}
+
+### 6.2 Get Conversations (Employee)
+GET {{baseUrl}}/api/messages/conversations
+Authorization: Bearer {{employeeToken}}
+
+### 6.3 Get Conversations (Client)
+GET {{baseUrl}}/api/messages/conversations
+Authorization: Bearer {{clientToken}}
+
+### 6.4 Send Message from Admin to Employee
+POST {{baseUrl}}/api/messages
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "receiverId": "{{newEmployeeId}}",
+    "content": "Welcome to the team! Please start working on the assigned project."
+}
+
+### 6.5 Send Message from Admin to Client
+POST {{baseUrl}}/api/messages
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "receiverId": "{{newClientId}}",
+    "content": "Your service request has been approved. Project will start soon."
+}
+
+### 6.6 Send Message from Employee to Admin
+POST {{baseUrl}}/api/messages
+Authorization: Bearer {{employeeToken}}
+Content-Type: application/json
+
+{
+    "receiverId": "65f8a1b2c3d4e5f6a7b8c9d0",
+    "content": "I have questions about the project requirements."
+}
+
+### 6.7 Send Message from Employee to Client
+POST {{baseUrl}}/api/messages
+Authorization: Bearer {{employeeToken}}
+Content-Type: application/json
+
+{
+    "receiverId": "{{newClientId}}",
+    "content": "Hi, I'm the developer assigned to your project. Can we discuss the requirements?"
+}
+
+### 6.8 Send Message from Client to Admin
+POST {{baseUrl}}/api/messages
+Authorization: Bearer {{clientToken}}
+Content-Type: application/json
+
+{
+    "receiverId": "65f8a1b2c3d4e5f6a7b8c9d0",
+    "content": "When will my project start? Need updates."
+}
+
+### 6.9 Send Message from Client to Employee
+POST {{baseUrl}}/api/messages
+Authorization: Bearer {{clientToken}}
+Content-Type: application/json
+
+{
+    "receiverId": "{{newEmployeeId}}",
+    "content": "Thanks for reaching out. Let's schedule a meeting."
+}
+
+### 6.10 Get Messages between Admin and Employee
+GET {{baseUrl}}/api/messages/{{newEmployeeId}}
+Authorization: Bearer {{adminToken}}
+
+### 6.11 Get Messages between Admin and Client
+GET {{baseUrl}}/api/messages/{{newClientId}}
+Authorization: Bearer {{adminToken}}
+
+### 6.12 Get Messages between Employee and Client (as Employee)
+GET {{baseUrl}}/api/messages/{{newClientId}}
+Authorization: Bearer {{employeeToken}}
+
+### 6.13 Send Message without Content (Should Fail - 400)
+POST {{baseUrl}}/api/messages
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "receiverId": "{{newEmployeeId}}"
+}
+
+### 6.14 Send Message to Invalid User (Should Fail - 500)
+POST {{baseUrl}}/api/messages
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "receiverId": "invalid-user-id",
+    "content": "Test message"
+}
+
+### =================================================================
+### 8. COMPLETE WORKFLOW TEST (RUN IN ORDER)
+### =================================================================
+
+### 8.1 Create Test Employee
+# @name workflowEmployee
+POST {{baseUrl}}/api/users
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "Workflow Employee",
+    "email": "workflow.emp@test.com",
+    "password": "Work@123",
+    "role": "employee",
+    "phone": "9998887770"
+}
+
+@workEmpId = {{workflowEmployee.response.body._id}}
+
+### 8.2 Create Test Client
+# @name workflowClient
+POST {{baseUrl}}/api/users
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "Workflow Client",
+    "email": "workflow.client@test.com",
+    "password": "Work@123",
+    "role": "client",
+    "companyName": "Workflow Inc",
+    "phone": "8887776660"
+}
+
+@workClientId = {{workflowClient.response.body._clientId}}
+
+### 8.3 Login as Test Client
+# @name workflowClientLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "workflow.client@test.com",
+    "password": "Work@123"
+}
+
+@workClientToken = {{workflowClientLogin.response.body.token}}
+
+### 8.4 Create Service Request (as Client)
+# @name workflowRequest
+POST {{baseUrl}}/api/service-requests
+Authorization: Bearer {{workClientToken}}
+Content-Type: application/json
+
+{
+    "service": "{{service1Id}}",
+    "description": "Workflow test request"
+}
+
+@workRequestId = {{workflowRequest.response.body._id}}
+
+### 8.5 Approve Request (as Admin)
+PUT {{baseUrl}}/api/service-requests/{{workRequestId}}/approve
+Authorization: Bearer {{adminToken}}
+
+### 8.6 Get Projects to Find Created Project ID
+GET {{baseUrl}}/api/projects
+Authorization: Bearer {{adminToken}}
+
+### 8.7 Assign Employee to Project (Manual - Copy project ID from above)
+PUT {{baseUrl}}/api/projects/PROJECT_ID_HERE/assign
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "employeeIds": ["{{workEmpId}}"]
+}
+
+### 8.8 Login as Test Employee
+# @name workflowEmployeeLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "workflow.emp@test.com",
+    "password": "Work@123"
+}
+
+@workEmpToken = {{workflowEmployeeLogin.response.body.token}}
+
+### 8.9 Update Project Status (as Employee)
+PUT {{baseUrl}}/api/projects/PROJECT_ID_HERE/status
+Authorization: Bearer {{workEmpToken}}
+Content-Type: application/json
+
+{
+    "status": "in-progress"
+}
+
+### 8.10 Send Message from Client to Employee
+POST {{baseUrl}}/api/messages
+Authorization: Bearer {{workClientToken}}
+Content-Type: application/json
+
+{
+    "receiverId": "{{workEmpId}}",
+    "content": "How is the project progress?"
+}
+
+### 8.11 Send Reply from Employee to Client
+POST {{baseUrl}}/api/messages
+Authorization: Bearer {{workEmpToken}}
+Content-Type: application/json
+
+{
+    "receiverId": "{{workClientId}}",
+    "content": "Making good progress. Will update soon."
+}
+
+### 8.12 Check Conversation
+GET {{baseUrl}}/api/messages/{{workClientId}}
+Authorization: Bearer {{workEmpToken}}
+
+### 8.13 Cleanup - Delete Test Users
+DELETE {{baseUrl}}/api/users/{{workEmpId}}
+Authorization: Bearer {{adminToken}}
+
+DELETE {{baseUrl}}/api/users/{{workClientId}}
+Authorization: Bearer {{adminToken}}
+
+### =================================================================
+### 9. BONUS TESTS - EDGE CASES
+### =================================================================
+
+### 9.1 Create Request with Empty Description
+POST {{baseUrl}}/api/service-requests
+Authorization: Bearer {{clientToken}}
+Content-Type: application/json
+
+{
+    "service": "{{service1Id}}",
+    "description": ""
+}
+
+### 9.2 Assign Non-existent Employee to Project
+PUT {{baseUrl}}/api/projects/{{projectId}}/assign
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "employeeIds": ["123456789012345678901234"]
+}
+
+### 9.3 Send Empty Message
+POST {{baseUrl}}/api/messages
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "receiverId": "{{newEmployeeId}}",
+    "content": ""
+}
+
+### 9.4 Get Messages with Invalid User ID
+GET {{baseUrl}}/api/messages/invalid-id
+Authorization: Bearer {{adminToken}}
+
+### 9.5 Create Service with Negative Price
+POST {{baseUrl}}/api/services
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "Negative Price Service",
+    "description": "Testing negative price",
+    "price": -100,
+    "duration": "1 month"
+}

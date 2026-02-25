@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -23,7 +22,9 @@ const userSchema = new mongoose.Schema({
     },
     companyName: {
         type: String,
-        required: function () { return this.role === 'client'; }
+        required: function () {
+            return this.role === 'client';
+        }
     },
     phone: String,
     profileImage: String,
@@ -34,9 +35,17 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('save', async function () {
-    if (!this.isModified('password')) return;
-    this.password = await bcrypt.hash(this.password, 10);
+    if (!this.isModified('password')) {
+        return;
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
 });
 
-const User = mongoose.model("User", userSchema);
+userSchema.methods.comparePassword = async function (candidatePassword) {
+    return bcrypt.compare(candidatePassword, this.password);
+};
+
+const User = mongoose.model('User', userSchema);
 export default User;

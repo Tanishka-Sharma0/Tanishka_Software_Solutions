@@ -13,12 +13,13 @@ const register = async (req, res) => {
         const { name, email, password, role, companyName, phone } = req.body;
         const userExists = await User.findOne({ email });
         if (userExists) {
-            res.status(400).json({ message: 'User already exists' });
+            return res.status(400).json({ message: 'User already exists' });
         }
         const user = await User.create({
             name,
             email,
             password,
+            role: role || 'employee',
             companyName,
             phone,
         });
@@ -38,26 +39,38 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({ email });
+        if (!email || !password) {
+            return res.status(400).json({
+                message: 'Please provide email and password'
+            });
+        }
+        const user = await User.findOne({ email: email.toLowerCase() });
         if (!user) {
-            res.status(401).json({ message: 'Invalid email or password' });
+            return res.status(401).json({
+                message: 'Invalid email or password'
+            });
         }
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
-            res.status(401).json({ message: 'Invalid email or password' });
+            return res.status(401).json({
+                message: 'Invalid email or password'
+            });
         }
-
         res.json({
             _id: user._id,
             name: user.name,
             email: user.email,
             role: user.role,
             companyName: user.companyName,
+            phone: user.phone,
             token: generateToken(user._id)
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Login error:', error);
+        res.status(500).json({
+            message: error.message || 'Server error during login'
+        });
     }
-}
+};
 
 export { register, login }
