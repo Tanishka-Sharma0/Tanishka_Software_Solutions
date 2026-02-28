@@ -59,7 +59,6 @@ const getProjectById = async (req, res) => {
             return res.status(404).json({ message: 'Project not found' });
         }
 
-        // Check authorization
         if (req.user.role === 'client' && project.client._id.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: 'Not authorized to view this project' });
         }

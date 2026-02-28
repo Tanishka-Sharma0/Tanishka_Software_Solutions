@@ -38,30 +38,35 @@ const getMessages = async (req, res) => {
 
 const getConversations = async (req, res) => {
     try {
-        const message = await Message.find({
-            $or: [
-                { sender: req.user._id },
-                { receiver: req.user._id }
-            ]
+        const messages = await Message.find({
+            $or: [{ sender: req.user._id }, { receiver: req.user._id }]
         })
-            .populate('sender', 'name role')
-            .populate('receiver', 'name role')
+            .populate('sender', 'name role email')
+            .populate('receiver', 'name role email')
             .sort('-createdAt');
 
-        // Get unique users from messages
-        const users = new Map();
-        message.forEach(msg => {
-            if (msg.sender._id.toString() !== req.user._id.toString()) {
-                users.set(msg.sender._id.toString(), msg.sender);
-            }
-            if (msg.receiver._id.toString() !== req.user._id.toString()) {
-                users.set(msg.receiver._id.toString(), msg.receiver);
+        const usersMap = new Map();
+
+        messages.forEach(msg => {
+            const other = msg.sender._id.toString() === req.user._id.toString()
+                ? msg.receiver
+                : msg.sender;
+
+            if (!usersMap.has(other._id.toString())) {
+                usersMap.set(other._id.toString(), {
+                    _id: other._id,
+                    name: other.name,
+                    role: other.role,
+                    email: other.email || ''
+                });
             }
         });
-        res.json(Array.from(users.values()));
+
+        const conversationUsers = Array.from(usersMap.values());
+        res.json(conversationUsers);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+};
 
 export { sendMessage, getMessages, getConversations };

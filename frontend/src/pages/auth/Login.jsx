@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 
@@ -18,11 +19,12 @@ const Login = () => {
         try {
 
             const user = await login(email, password);
+            console.log("API URL:", import.meta.env.VITE_API_URL);
             navigate(`/${user.role}`);
             toast.success('Login successful');
 
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Login failed');
+            toast.error(err.message || 'Login failed');
         } finally {
             setLoading(false);
         }
@@ -62,6 +64,12 @@ const Login = () => {
                 </form>
 
                 <div className="mt-6 p-4 bg-gray-50 rounded">
+                    <p className="mt-4 text-sm text-center">
+                        Don't have an account?{' '}
+                        <Link to="/register" className="text-blue-600 font-semibold">
+                            Register
+                        </Link>
+                    </p>
                     <p className="text-sm font-semibold mb-2">Test Credentials:</p>
                     <p className="text-xs">Admin: admin@rahulsoftware.com / Admin@123</p>
                     <p className="text-xs">Employee: employee@test.com / Employee@123</p>

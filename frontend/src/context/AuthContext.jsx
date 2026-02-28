@@ -20,7 +20,8 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
+            console.log("API URL:", import.meta.env.VITE_API_URL);
+            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
                 email,
                 password
             });
@@ -30,7 +31,7 @@ export const AuthProvider = ({ children }) => {
             toast.success('Login successful!');
             return data;
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Login failed');
+            toast.error(error.message || 'Login failed');
             throw error;
         }
     };

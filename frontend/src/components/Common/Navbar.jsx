@@ -12,6 +12,20 @@ const Navbar = () => {
         navigate('/login');
     };
 
+    const handleAccess = (targetRole, path) => {
+        if (user.role === 'admin') {
+            navigate(path);
+            return;
+        }
+
+        if (user.role !== targetRole) {
+            toast.error(`Your role is ${user.role}. You cannot access ${targetRole} dashboard.`);
+            return;
+        }
+
+        navigate(path);
+    };
+
     if (!user) return null;
 
     return (
@@ -24,6 +38,7 @@ const Navbar = () => {
                     <div className="flex space-x-4">
                         <Link
                             to="/admin"
+                            onClick={() => handleAccess('admin', '/admin')}
                             className={`px-3 py-2 rounded-md text-sm font-medium ${user.role === 'admin'
                                 ? 'bg-blue-600 text-white'
                                 : 'text-gray-700 hover:bg-gray-100'
@@ -33,6 +48,7 @@ const Navbar = () => {
                         </Link>
                         <Link
                             to="/employee"
+                            onClick={() => handleAccess('admin', '/admin')}
                             className={`px-3 py-2 rounded-md text-sm font-medium ${user.role === 'employee'
                                 ? 'bg-green-600 text-white'
                                 : 'text-gray-700 hover:bg-gray-100'
@@ -42,6 +58,7 @@ const Navbar = () => {
                         </Link>
                         <Link
                             to="/client"
+                            onClick={() => handleAccess('admin', '/admin')}
                             className={`px-3 py-2 rounded-md text-sm font-medium ${user.role === 'client'
                                 ? 'bg-purple-600 text-white'
                                 : 'text-gray-700 hover:bg-gray-100'

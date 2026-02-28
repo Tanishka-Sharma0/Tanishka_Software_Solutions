@@ -17,29 +17,62 @@ const AdminDashboard = () => {
 
     });
 
+    const [recentActivity, setRecentActivity] = useState([]);
+    const fetchRecentActivity = async () => {
+        try {
+            const [requests, projects] = await Promise.all([
+                axios.get(`${import.meta.env.VITE_API_URL}/api/service-requests`, {
+                    headers: { Authorization: `Bearer ${user.token}` }
+                }),
+                axios.get(`${import.meta.env.VITE_API_URL}/api/projects`, {
+                    headers: { Authorization: `Bearer ${user.token}` }
+                })
+            ]);
+
+            const activities = [];
+            requests.data.slice(0, 3).forEach(req => {
+                activities.push({
+                    time: new Date(req.createdAt).toLocaleDateString(),
+                    text: `New service request from ${req.client?.companyName || req.client?.name || "client"}`
+                });
+            });
+            projects.data.slice(0, 3).forEach(proj => {
+                activities.push({
+                    time: new Date(proj.createdAt).toLocaleDateString(),
+                    text: `Project started: ${proj.name || "Project Name"}`
+                });
+            });
+
+            setRecentActivity(activities.sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 5));
+        } catch (error) {
+            console.error('Error fetching activity:', error);
+        }
+    };
+
     useEffect(() => {
         fetchStats();
+        fetchRecentActivity();
     }, []);
 
     const fetchStats = async () => {
         try {
             const [users, project, requests, services] = await Promise.all([
-                axios.get(`${process.env.REACT_APP_API_URL}/api/users`, {
+                axios.get(`${import.meta.env.VITE_API_URL}/api/users`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`
                     }
                 }),
-                axios.get(`${process.env.REACT_APP_API_URL}/api/projects`, {
+                axios.get(`${import.meta.env.VITE_API_URL}/api/projects`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`
                     }
                 }),
-                axios.get(`${process.env.REACT_APP_API_URL}/api/service-requests`, {
+                axios.get(`${import.meta.env.VITE_API_URL}/api/service-requests`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`
                     }
                 }),
-                axios.get(`${process.env.REACT_APP_API_URL}/api/services`, {
+                axios.get(`${import.meta.env.VITE_API_URL}/api/services`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`
                     }
@@ -99,6 +132,15 @@ const AdminDashboard = () => {
                     </div>
                     <div className="bg-white p-6 rounded-lg shadow">
                         <h2 className="text-xl font-bold mb-4">Recent Activity</h2>
+                        <div className="space-y-3">
+                            {recentActivity.map((activity, index) => (
+                                <div key={index} className="flex items-center text-sm border-b pb-2">
+                                    <span className="text-gray-500">{activity.time}</span>
+                                    <span className="mx-2">•</span>
+                                    <span>{activity.text}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

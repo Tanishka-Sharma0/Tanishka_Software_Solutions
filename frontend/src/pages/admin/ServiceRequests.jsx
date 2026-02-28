@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
-import AdminLayout from '../../components/Layout/AdminLayout';
+import AdminLayout from '../../components/Layouts/AdminLayout';
 import toast from 'react-hot-toast';
 import { FiCheck, FiX } from 'react-icons/fi';
 
@@ -35,6 +35,20 @@ const AdminServiceRequests = () => {
         return <span className={`px-2 py-1 rounded-full text-xs ${colors[status] || 'bg-gray-100'}`}>{status}</span>;
     };
 
+    const handleReject = async (id) => {
+        if (window.confirm('Are you sure you want to reject this request?')) {
+            try {
+                await axios.put(`${import.meta.env.VITE_API_URL}/api/service-requests/${id}/reject`, {}, {
+                    headers: { Authorization: `Bearer ${user.token}` }
+                });
+                toast.success('Request rejected');
+                fetchRequests();
+            } catch (error) {
+                toast.error('Error rejecting request');
+            }
+        }
+    };
+
     return (
         <AdminLayout>
             <div className="p-6">
@@ -61,9 +75,28 @@ const AdminServiceRequests = () => {
                                     <td className="px-6 py-4">{new Date(req.createdAt).toLocaleDateString()}</td>
                                     <td className="px-6 py-4">
                                         {req.status === 'pending' && (
-                                            <button onClick={() => handleApprove(req._id)} className="text-green-600 hover:text-green-800 mr-3">
-                                                <FiCheck size={20} />
-                                            </button>
+                                            <div className="flex space-x-2">
+                                                <button
+                                                    onClick={() => handleApprove(req._id)}
+                                                    className="text-green-600 hover:text-green-800"
+                                                    title="Approve"
+                                                >
+                                                    <FiCheck size={20} />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleReject(req._id)}
+                                                    className="text-red-600 hover:text-red-800"
+                                                    title="Reject"
+                                                >
+                                                    <FiX size={20} />
+                                                </button>
+                                            </div>
+                                        )}
+                                        {req.status === 'approved' && (
+                                            <span className="text-green-600 text-sm">✓ Approved</span>
+                                        )}
+                                        {req.status === 'rejected' && (
+                                            <span className="text-red-600 text-sm">✗ Rejected</span>
                                         )}
                                     </td>
                                 </tr>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
-import ClientLayout from '../../components/Layout/ClientLayout';
+import ClientLayout from '../../components/Layouts/ClientLayout';
+import RequestModal from '../../components/Modals/RequestModal';
 import toast from 'react-hot-toast';
 import { FiPlus } from 'react-icons/fi';
 
@@ -84,26 +85,14 @@ const ClientServiceRequests = () => {
                     </table>
                 </div>
 
-                {showModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                        <div className="bg-white p-6 rounded-lg w-96">
-                            <h2 className="text-xl font-bold mb-4">New Service Request</h2>
-                            <form onSubmit={handleSubmit}>
-                                <select className="w-full p-2 border rounded mb-3"
-                                    value={formData.service} onChange={(e) => setFormData({ ...formData, service: e.target.value })} required>
-                                    <option value="">Select Service</option>
-                                    {services.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
-                                </select>
-                                <textarea placeholder="Description" className="w-full p-2 border rounded mb-3" rows="3"
-                                    value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
-                                <div className="flex justify-end space-x-2">
-                                    <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 bg-gray-300 rounded">Cancel</button>
-                                    <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Submit</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                )}
+                <RequestModal
+                    isOpen={showModal}
+                    onClose={() => setShowModal(false)}
+                    onSubmit={handleSubmit}
+                    formData={formData}
+                    setFormData={setFormData}
+                    services={services}
+                />
             </div>
         </ClientLayout>
     );

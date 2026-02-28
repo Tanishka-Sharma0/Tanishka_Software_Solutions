@@ -3,12 +3,14 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import AdminLayout from '../../components/Layouts/AdminLayout';
 import toast from 'react-hot-toast';
-
+import ProjectModal from '../../components/Modals/ProjectModal';
+import AssignModal from '../../components/Modals/AssignModal';
 
 const AdminProjects = () => {
     const { user } = useAuth();
     const [projects, setProjects] = useState([]);
     const [users, setUsers] = useState([]);
+    const [services, setServices] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
@@ -22,13 +24,14 @@ const AdminProjects = () => {
     });
 
     useEffect(() => {
+        fetchServices();
         fetchProjects();
         fetchUsers();
     }, [])
 
     const fetchProjects = async () => {
         try {
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects`, {
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/projects`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setProjects(data);
@@ -39,7 +42,7 @@ const AdminProjects = () => {
 
     const fetchUsers = async () => {
         try {
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/users`, {
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/users`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setUsers(data);
@@ -48,17 +51,21 @@ const AdminProjects = () => {
         }
     };
 
-    const handleInputChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+    const fetchServices = async () => {
+        try {
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/services`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            setServices(data);
+        } catch (error) {
+            toast.error('Error fetching services');
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${process.env.REACT_APP_API_URL}/api/projects`, formData, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/projects`, formData, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             toast.success('Project created successfully');
@@ -71,7 +78,7 @@ const AdminProjects = () => {
 
     const handleAssignEmployees = async (projectId, employeeIds) => {
         try {
-            await axios.put(`${process.env.REACT_APP_API_URL}/api/projects/${projectId}/assign`, { employeeIds }, { headers: { Authorization: `Bearer ${user.token}` } });
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/projects/${projectId}/assign`, { employeeIds }, { headers: { Authorization: `Bearer ${user.token}` } });
             toast.success('Employees assigned successfully');
             setShowAssignModal(false);
             fetchProjects();
@@ -154,165 +161,27 @@ const AdminProjects = () => {
                     ))}
                 </div>
 
-                {showModal && (
-                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-                        <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                            <h3 className="text-lg font-bold mb-4">Create New Project</h3>
-                            <form onSubmit={handleSubmit}>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">Project Name</label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full border rounded-md shadow-sm p-2"
-                                        required
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">Description</label>
-                                    <textarea
-                                        name="description"
-                                        value={formData.description}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full border rounded-md shadow-sm p-2"
-                                        rows="3"
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">Client</label>
-                                    <select
-                                        name="client"
-                                        value={formData.client}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full border rounded-md shadow-sm p-2"
-                                        required
-                                    >
-                                        <option value="">Select Client</option>
-                                        {users.filter(u => u.role === 'client').map(client => (
-                                            <option key={client._id} value={client._id}>
-                                                {client.companyName || client.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">Service</label>
-                                    <input
-                                        type="text"
-                                        name="service"
-                                        value={formData.service}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full border rounded-md shadow-sm p-2"
-                                        required
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4 mb-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Start Date</label>
-                                        <input
-                                            type="date"
-                                            name="startDate"
-                                            value={formData.startDate}
-                                            onChange={handleInputChange}
-                                            className="mt-1 block w-full border rounded-md shadow-sm p-2"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Deadline</label>
-                                        <input
-                                            type="date"
-                                            name="deadline"
-                                            value={formData.deadline}
-                                            onChange={handleInputChange}
-                                            className="mt-1 block w-full border rounded-md shadow-sm p-2"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="flex justify-end space-x-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowModal(false)}
-                                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                                    >
-                                        Create
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                )}
+                <ProjectModal
+                    isOpen={showModal}
+                    onClose={() => setShowModal(false)}
+                    onSubmit={handleSubmit}
+                    formData={formData}
+                    setFormData={setFormData}
+                    clients={users.filter(u => u.role === 'client')}
+                    services={services}
+                />
+
                 {showAssignModal && selectedProject && (
-                    <AssignEmployeesModal
-                        project={selectedProject}
-                        users={users.filter(u => u.role === 'employee')}
-                        onAssign={handleAssignEmployees}
+                    <AssignModal
+                        isOpen={showAssignModal}
                         onClose={() => setShowAssignModal(false)}
+                        onAssign={handleAssignEmployees}
+                        project={selectedProject}
+                        employees={users.filter(u => u.role === 'employee')}
                     />
                 )}
             </div>
         </AdminLayout>
     )
-};
-
-const AssignEmployeesModal = ({ project, users, onAssign, onClose }) => {
-
-    const [selectedEmployees, setSelectedEmployees] = useState(project.assignedEmployees?.map(e => e._id) || []);
-
-    const handleToggle = (employeeId) => {
-        setSelectedEmployees(prev =>
-            prev.includes(employeeId)
-                ? prev.filter(id => id !== employeeId)
-                : [...prev, employeeId]
-        )
-    };
-
-    const handleSubmit = () => {
-        onAssign(project._id, selectedEmployees);
-    };
-
-    return (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-            <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                <h3 className="text-lg font-bold mb-4">
-                    Assign Employees to {project.name}
-                </h3>
-                <div className="space-y-2 max-h-60 overflow-y-auto">
-                    {users.map((employee) => (
-                        <label key={employee._id} className="flex items-center space-x-2 p-2 hover:bg-gray-50">
-                            <input
-                                type="checkbox"
-                                checked={selectedEmployees.includes(employee._id)}
-                                onChange={() => handleToggle(employee._id)}
-                                className="rounded"
-                            />
-                            <span>{employee.name}</span>
-                        </label>
-                    ))}
-                </div>
-                <div className="flex justify-end space-x-2 mt-4">
-                    <button
-                        onClick={onClose}
-                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        onClick={handleSubmit}
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                        Assign
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
 };
 export default AdminProjects;

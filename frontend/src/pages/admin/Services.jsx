@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import AdminLayout from '../../components/Layouts/AdminLayout';
+import ServiceModal from '../../components/Modals/ServiceModal';
 import toast from 'react-hot-toast';
 import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
 
@@ -74,28 +75,13 @@ const AdminServices = () => {
                         </div>
                     ))}
                 </div>
-
-                {showModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                        <div className="bg-white p-6 rounded-lg w-96">
-                            <h2 className="text-xl font-bold mb-4">Add New Service</h2>
-                            <form onSubmit={handleSubmit}>
-                                <input type="text" placeholder="Service Name" className="w-full p-2 border rounded mb-3"
-                                    value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
-                                <textarea placeholder="Description" className="w-full p-2 border rounded mb-3" rows="3"
-                                    value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
-                                <input type="number" placeholder="Price" className="w-full p-2 border rounded mb-3"
-                                    value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} required />
-                                <input type="text" placeholder="Duration (e.g., 2 months)" className="w-full p-2 border rounded mb-3"
-                                    value={formData.duration} onChange={(e) => setFormData({ ...formData, duration: e.target.value })} required />
-                                <div className="flex justify-end space-x-2">
-                                    <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 bg-gray-300 rounded">Cancel</button>
-                                    <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Create</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                )}
+                <ServiceModal
+                    isOpen={showModal}
+                    onClose={() => setShowModal(false)}
+                    onSubmit={handleSubmit}
+                    formData={formData}
+                    setFormData={setFormData}
+                />
             </div>
         </AdminLayout>
     );

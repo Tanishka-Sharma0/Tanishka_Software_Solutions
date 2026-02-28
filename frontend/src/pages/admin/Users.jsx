@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import AdminLayout from '../../components/Layouts/AdminLayout';
 import toast from 'react-hot-toast';
+import UserModal from '../../components/Modals/UserModal';
 
 const AdminUsers = () => {
     const { user } = useAuth();
@@ -23,7 +24,7 @@ const AdminUsers = () => {
 
     const fetchUsers = async () => {
         try {
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/users`, {
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/users`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setUsers(data);
@@ -34,7 +35,7 @@ const AdminUsers = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${process.env.REACT_APP_API_URL}/api/users`, formData, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/users`, formData, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             toast.success('User created successfully');
@@ -53,17 +54,10 @@ const AdminUsers = () => {
         }
     };
 
-    const handleInputChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    }
-
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
             try {
-                await axios.delete(`${process.env.REACT_APP_API_URL}/api/users/${id}`, {
+                await axios.delete(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
                     headers: { Authorization: `Bearer ${user.token}` }
                 });
                 toast.success('User deleted successfully');
@@ -85,7 +79,7 @@ const AdminUsers = () => {
                         Add New User
                     </button>
                 </div>
-                <div className="bg-white rounded-lg shadow overflow-hidden">
+                <div className="bg-white rounded-lg shadow overflow-x-auto">
                     <table className="min-w-full">
                         <thead className="bg-gray-50">
                             <tr>
@@ -98,8 +92,8 @@ const AdminUsers = () => {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {users.map((user) => (
-                                <tr key={user.id}>
+                            {users.map((u) => (
+                                <tr key={u.id}>
                                     <td className="px-6 py-4 whitespace-nowrap">{u.name}</td>
                                     <td className="px-6 py-4 whitespace-nowrap">{u.email}</td>
                                     <td className="px-6 py-4 whitespace-nowrap">
@@ -127,98 +121,13 @@ const AdminUsers = () => {
                         </tbody>
                     </table>
                 </div>
-                {showModal && (
-                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-                        <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                            <h3 className="text-lg font-bold mb-4">Add New User</h3>
-                            <form onSubmit={handleSubmit}>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">Name</label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full border rounded-md shadow-sm p-2"
-                                        required
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">Email</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full border rounded-md shadow-sm p-2"
-                                        required
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">Password</label>
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        value={formData.password}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full border rounded-md shadow-sm p-2"
-                                        required
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">Role</label>
-                                    <select
-                                        name="role"
-                                        value={formData.role}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full border rounded-md shadow-sm p-2"
-                                    >
-                                        <option value="employee">Employee</option>
-                                        <option value="client">Client</option>
-                                    </select>
-                                </div>
-                                {formData.role === 'client' && (
-                                    <div className="mb-4">
-                                        <label className="block text-sm font-medium text-gray-700">Company Name</label>
-                                        <input
-                                            type="text"
-                                            name="companyName"
-                                            value={formData.companyName}
-                                            onChange={handleInputChange}
-                                            className="mt-1 block w-full border rounded-md shadow-sm p-2"
-                                            required
-                                        />
-                                    </div>
-                                )}
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">Phone</label>
-                                    <input
-                                        type="text"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full border rounded-md shadow-sm p-2"
-                                    />
-                                </div>
-                                <div className="flex justify-end space-x-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowModal(false)}
-                                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                                    >
-                                        Create
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                )}
+                <UserModal
+                    isOpen={showModal}
+                    onClose={() => setShowModal(false)}
+                    onSubmit={handleSubmit}
+                    formData={formData}
+                    setFormData={setFormData}
+                />
             </div>
         </AdminLayout>
     );

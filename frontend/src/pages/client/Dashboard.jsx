@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
-import ClientLayout from '../../components/Layout/ClientLayout';
+import ClientLayout from '../../components/Layouts/ClientLayout';
 import { FiBriefcase, FiClipboard, FiMessageSquare, FiCheckCircle } from 'react-icons/fi';
 
 

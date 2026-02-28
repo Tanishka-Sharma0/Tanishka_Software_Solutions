@@ -59,4 +59,18 @@ const approveRequest = async (req, res) => {
     }
 };
 
-export { getRequests, createRequest, approveRequest };
+const rejectRequest = async (req, res) => {
+    try {
+        const request = await ServiceRequest.findById(req.params.id);
+        if (!request) {
+            return res.status(404).json({ message: 'Request not found' });
+        }
+        request.status = 'rejected';
+        await request.save();
+        res.json({ message: 'Request rejected', request });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export { getRequests, createRequest, approveRequest, rejectRequest };
