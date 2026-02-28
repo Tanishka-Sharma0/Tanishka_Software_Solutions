@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import AdminLayout from '../../components/Layouts/AdminLayout';
 import toast from 'react-hot-toast';
 import UserModal from '../../components/Modals/UserModal';
+import { API_BASE_URL } from '../../utils/constants';
 
 const AdminUsers = () => {
     const { user } = useAuth();
@@ -24,7 +25,7 @@ const AdminUsers = () => {
 
     const fetchUsers = async () => {
         try {
-            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/users`, {
+            const { data } = await axios.get(`${API_BASE_URL}/api/users`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setUsers(data);
@@ -35,7 +36,7 @@ const AdminUsers = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/users`, formData, {
+            await axios.post(`${API_BASE_URL}/api/users`, formData, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             toast.success('User created successfully');
@@ -57,7 +58,7 @@ const AdminUsers = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
             try {
-                await axios.delete(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
+                await axios.delete(`${API_BASE_URL}/api/users/${id}`, {
                     headers: { Authorization: `Bearer ${user.token}` }
                 });
                 toast.success('User deleted successfully');

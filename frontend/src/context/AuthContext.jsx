@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../utils/constants';
 
 const AuthContext = createContext();
 
@@ -20,8 +21,8 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            console.log("API URL:", import.meta.env.VITE_API_URL);
-            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+            console.log("API URL:", API_BASE_URL);
+            const { data } = await axios.post(`${API_BASE_URL}/api/auth/login`, {
                 email,
                 password
             });

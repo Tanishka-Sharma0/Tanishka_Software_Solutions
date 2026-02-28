@@ -26,4 +26,4 @@ export const STATUS_COLORS = {
     [REQUEST_STATUS.REJECTED]: 'bg-red-100 text-red-800'
 };
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+export const API_BASE_URL = "https://tanishka-software-solutions-backend.onrender.com";

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import EmployeeLayout from '../../components/Layouts/EmployeeLayout';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../../utils/constants';
 
 const EmployeeProjects = () => {
     const { user } = useAuth();
@@ -12,7 +13,7 @@ const EmployeeProjects = () => {
 
     const fetchProjects = async () => {
         try {
-            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/projects`, {
+            const { data } = await axios.get(`${API_BASE_URL}/api/projects`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setProjects(data);
@@ -21,7 +22,7 @@ const EmployeeProjects = () => {
 
     const updateStatus = async (projectId, status) => {
         try {
-            await axios.put(`${import.meta.env.VITE_API_URL}/api/projects/${projectId}/status`, { status }, {
+            await axios.put(`${API_BASE_URL}/api/projects/${projectId}/status`, { status }, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             toast.success('Status updated');

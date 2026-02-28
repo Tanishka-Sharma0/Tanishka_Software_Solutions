@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-
+import { API_BASE_URL } from '../../utils/constants';
 const Register = () => {
     const navigate = useNavigate();
 
@@ -30,7 +30,7 @@ const Register = () => {
 
         try {
             await axios.post(
-                `${import.meta.env.VITE_API_URL}/api/auth/register`,
+                `${API_BASE_URL}/api/auth/register`,
                 formData
             );
 

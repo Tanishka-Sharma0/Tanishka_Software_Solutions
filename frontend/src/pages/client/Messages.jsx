@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import EmployeeLayout from '../../components/Layouts/EmployeeLayout';
 import toast from 'react-hot-toast';
 import { FiSend, FiPlus } from 'react-icons/fi';
+import { API_BASE_URL } from '../../utils/constants';
 
 const EmployeeMessages = () => {
     const { user } = useAuth();
@@ -22,7 +23,7 @@ const EmployeeMessages = () => {
 
     const fetchConversations = async () => {
         try {
-            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/messages/conversations`, {
+            const { data } = await axios.get(`${API_BASE_URL}/api/messages/conversations`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setConversations(data || []);
@@ -34,7 +35,7 @@ const EmployeeMessages = () => {
     const fetchAvailableContacts = async () => {
         setLoading(true);
         try {
-            const projectsRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/projects`, {
+            const projectsRes = await axios.get(`${API_BASE_URL}/api/projects`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
 
@@ -47,7 +48,7 @@ const EmployeeMessages = () => {
                 }
             });
 
-            const usersRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/users`, {
+            const usersRes = await axios.get(`${API_BASE_URL}/api/users`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             const admin = usersRes.data.find(u => u.role === 'admin');
@@ -75,7 +76,7 @@ const EmployeeMessages = () => {
 
     const fetchMessages = async (userId) => {
         try {
-            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/messages/${userId}`, {
+            const { data } = await axios.get(`${API_BASE_URL}/api/messages/${userId}`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setMessages(data || []);
@@ -87,7 +88,7 @@ const EmployeeMessages = () => {
     const sendMessage = async () => {
         if (!newMessage.trim() || !selectedUser) return;
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/messages`, {
+            await axios.post(`${API_BASE_URL}/api/messages`, {
                 receiverId: selectedUser._id,
                 content: newMessage
             }, { headers: { Authorization: `Bearer ${user.token}` } });

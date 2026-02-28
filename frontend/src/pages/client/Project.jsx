@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import ClientLayout from '../../components/Layouts/ClientLayout';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../../utils/constants';
 
 const ClientProjects = () => {
     const { user } = useAuth();
@@ -12,7 +13,7 @@ const ClientProjects = () => {
 
     const fetchProjects = async () => {
         try {
-            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/projects`, {
+            const { data } = await axios.get(`${API_BASE_URL}/api/projects`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setProjects(data);

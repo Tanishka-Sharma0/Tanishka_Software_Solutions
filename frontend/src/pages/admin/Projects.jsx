@@ -5,6 +5,7 @@ import AdminLayout from '../../components/Layouts/AdminLayout';
 import toast from 'react-hot-toast';
 import ProjectModal from '../../components/Modals/ProjectModal';
 import AssignModal from '../../components/Modals/AssignModal';
+import { API_BASE_URL } from '../../utils/constants';
 
 const AdminProjects = () => {
     const { user } = useAuth();
@@ -31,7 +32,7 @@ const AdminProjects = () => {
 
     const fetchProjects = async () => {
         try {
-            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/projects`, {
+            const { data } = await axios.get(`${API_BASE_URL}/api/projects`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setProjects(data);
@@ -42,7 +43,7 @@ const AdminProjects = () => {
 
     const fetchUsers = async () => {
         try {
-            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/users`, {
+            const { data } = await axios.get(`${API_BASE_URL}/api/users`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setUsers(data);
@@ -53,7 +54,7 @@ const AdminProjects = () => {
 
     const fetchServices = async () => {
         try {
-            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/services`, {
+            const { data } = await axios.get(`${API_BASE_URL}/api/services`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setServices(data);
@@ -65,7 +66,7 @@ const AdminProjects = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/projects`, formData, {
+            await axios.post(`${API_BASE_URL}/api/projects`, formData, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             toast.success('Project created successfully');
@@ -78,7 +79,7 @@ const AdminProjects = () => {
 
     const handleAssignEmployees = async (projectId, employeeIds) => {
         try {
-            await axios.put(`${import.meta.env.VITE_API_URL}/api/projects/${projectId}/assign`, { employeeIds }, { headers: { Authorization: `Bearer ${user.token}` } });
+            await axios.put(`${API_BASE_URL}/api/projects/${projectId}/assign`, { employeeIds }, { headers: { Authorization: `Bearer ${user.token}` } });
             toast.success('Employees assigned successfully');
             setShowAssignModal(false);
             fetchProjects();

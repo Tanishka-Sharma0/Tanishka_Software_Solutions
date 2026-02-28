@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { FiUser, FiMail, FiPhone, FiBriefcase, FiSave } from 'react-icons/fi';
+import { API_BASE_URL } from '../utils/constants';
 
 const Profile = () => {
     const { user, logout } = useAuth();
@@ -37,7 +38,7 @@ const Profile = () => {
                 ...(formData.newPassword && { password: formData.newPassword })
             };
 
-            const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/users/profile`, updateData, {
+            const { data } = await axios.put(`${API_BASE_URL}/api/users/profile`, updateData, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
 

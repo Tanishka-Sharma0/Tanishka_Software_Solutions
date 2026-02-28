@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import EmployeeLayout from '../../components/Layouts/EmployeeLayout';
 import { FiBriefcase, FiMessageSquare, FiCheckCircle } from 'react-icons/fi';
-
+import { API_BASE_URL } from '../../utils/constants';
 
 const EmployeeDashboard = () => {
     const { user } = useAuth();
@@ -12,7 +12,7 @@ const EmployeeDashboard = () => {
 
     const fetchStats = async () => {
         try {
-            const projects = await axios.get(`${import.meta.env.VITE_API_URL}/api/projects`, {
+            const projects = await axios.get(`${API_BASE_URL}/api/projects`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setStats({

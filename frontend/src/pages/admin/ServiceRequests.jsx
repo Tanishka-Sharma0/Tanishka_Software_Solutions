@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import AdminLayout from '../../components/Layouts/AdminLayout';
 import toast from 'react-hot-toast';
 import { FiCheck, FiX } from 'react-icons/fi';
+import { API_BASE_URL } from '../../utils/constants';
 
 const AdminServiceRequests = () => {
     const { user } = useAuth();
@@ -13,7 +14,7 @@ const AdminServiceRequests = () => {
 
     const fetchRequests = async () => {
         try {
-            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/service-requests`, {
+            const { data } = await axios.get(`${API_BASE_URL}/api/service-requests`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setRequests(data);
@@ -22,7 +23,7 @@ const AdminServiceRequests = () => {
 
     const handleApprove = async (id) => {
         try {
-            await axios.put(`${import.meta.env.VITE_API_URL}/api/service-requests/${id}/approve`, {}, {
+            await axios.put(`${API_BASE_URL}/api/service-requests/${id}/approve`, {}, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             toast.success('Request approved & project created');
@@ -38,7 +39,7 @@ const AdminServiceRequests = () => {
     const handleReject = async (id) => {
         if (window.confirm('Are you sure you want to reject this request?')) {
             try {
-                await axios.put(`${import.meta.env.VITE_API_URL}/api/service-requests/${id}/reject`, {}, {
+                await axios.put(`${API_BASE_URL}/api/service-requests/${id}/reject`, {}, {
                     headers: { Authorization: `Bearer ${user.token}` }
                 });
                 toast.success('Request rejected');

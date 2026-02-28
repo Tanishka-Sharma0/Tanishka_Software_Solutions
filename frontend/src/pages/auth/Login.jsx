@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../../utils/constants';
 
 
 const Login = () => {
@@ -19,7 +20,7 @@ const Login = () => {
         try {
 
             const user = await login(email, password);
-            console.log("API URL:", import.meta.env.VITE_API_URL);
+            console.log("API URL:", API_BASE_URL);
             navigate(`/${user.role}`);
             toast.success('Login successful');
 

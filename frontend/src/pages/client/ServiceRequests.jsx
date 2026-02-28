@@ -5,6 +5,7 @@ import ClientLayout from '../../components/Layouts/ClientLayout';
 import RequestModal from '../../components/Modals/RequestModal';
 import toast from 'react-hot-toast';
 import { FiPlus } from 'react-icons/fi';
+import { API_BASE_URL } from '../../utils/constants';
 
 const ClientServiceRequests = () => {
     const { user } = useAuth();
@@ -18,10 +19,10 @@ const ClientServiceRequests = () => {
     const fetchData = async () => {
         try {
             const [reqRes, servRes] = await Promise.all([
-                axios.get(`${import.meta.env.VITE_API_URL}/api/service-requests`, {
+                axios.get(`${API_BASE_URL}/api/service-requests`, {
                     headers: { Authorization: `Bearer ${user.token}` }
                 }),
-                axios.get(`${import.meta.env.VITE_API_URL}/api/services`, {
+                axios.get(`${API_BASE_URL}/api/services`, {
                     headers: { Authorization: `Bearer ${user.token}` }
                 })
             ]);
@@ -33,7 +34,7 @@ const ClientServiceRequests = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/service-requests`, formData, {
+            await axios.post(`${API_BASE_URL}/api/service-requests`, formData, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             toast.success('Request submitted');

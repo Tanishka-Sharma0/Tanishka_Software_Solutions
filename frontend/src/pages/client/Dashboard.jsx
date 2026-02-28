@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import ClientLayout from '../../components/Layouts/ClientLayout';
 import { FiBriefcase, FiClipboard, FiMessageSquare, FiCheckCircle } from 'react-icons/fi';
+import { API_BASE_URL } from '../../utils/constants';
 
 
 const ClientDashboard = () => {
@@ -13,10 +14,10 @@ const ClientDashboard = () => {
 
     const fetchStats = async () => {
         try {
-            const projects = await axios.get(`${import.meta.env.VITE_API_URL}/api/projects`, {
+            const projects = await axios.get(`${API_BASE_URL}/api/projects`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
-            const requests = await axios.get(`${import.meta.env.VITE_API_URL}/api/service-requests`, {
+            const requests = await axios.get(`${API_BASE_URL}/api/service-requests`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setStats({

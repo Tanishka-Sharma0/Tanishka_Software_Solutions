@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import AdminLayout from '../../components/Layouts/AdminLayout';
 import { Chart as ChartJs, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from "chart.js";
 import { Pie, Bar } from "react-chartjs-2";
+import { API_BASE_URL } from '../../utils/constants';
 
 ChartJs.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
@@ -21,10 +22,10 @@ const AdminDashboard = () => {
     const fetchRecentActivity = async () => {
         try {
             const [requests, projects] = await Promise.all([
-                axios.get(`${import.meta.env.VITE_API_URL}/api/service-requests`, {
+                axios.get(`${API_BASE_URL}/api/service-requests`, {
                     headers: { Authorization: `Bearer ${user.token}` }
                 }),
-                axios.get(`${import.meta.env.VITE_API_URL}/api/projects`, {
+                axios.get(`${API_BASE_URL}/api/projects`, {
                     headers: { Authorization: `Bearer ${user.token}` }
                 })
             ]);
@@ -57,22 +58,22 @@ const AdminDashboard = () => {
     const fetchStats = async () => {
         try {
             const [users, project, requests, services] = await Promise.all([
-                axios.get(`${import.meta.env.VITE_API_URL}/api/users`, {
+                axios.get(`${API_BASE_URL}/api/users`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`
                     }
                 }),
-                axios.get(`${import.meta.env.VITE_API_URL}/api/projects`, {
+                axios.get(`${API_BASE_URL}/api/projects`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`
                     }
                 }),
-                axios.get(`${import.meta.env.VITE_API_URL}/api/service-requests`, {
+                axios.get(`${API_BASE_URL}/api/service-requests`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`
                     }
                 }),
-                axios.get(`${import.meta.env.VITE_API_URL}/api/services`, {
+                axios.get(`${API_BASE_URL}/api/services`, {
                     headers: {
                         Authorization: `Bearer ${user.token}`
                     }

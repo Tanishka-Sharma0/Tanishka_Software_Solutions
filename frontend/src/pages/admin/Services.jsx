@@ -5,6 +5,7 @@ import AdminLayout from '../../components/Layouts/AdminLayout';
 import ServiceModal from '../../components/Modals/ServiceModal';
 import toast from 'react-hot-toast';
 import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
+import { API_BASE_URL } from '../../utils/constants';
 
 const AdminServices = () => {
     const { user } = useAuth();
@@ -16,7 +17,7 @@ const AdminServices = () => {
 
     const fetchServices = async () => {
         try {
-            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/services`, {
+            const { data } = await axios.get(`${API_BASE_URL}/api/services`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setServices(data);
@@ -26,7 +27,7 @@ const AdminServices = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/services`, formData, {
+            await axios.post(`${API_BASE_URL}/api/services`, formData, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             toast.success('Service created');
@@ -39,7 +40,7 @@ const AdminServices = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Delete this service?')) {
             try {
-                await axios.delete(`${import.meta.env.VITE_API_URL}/api/services/${id}`, {
+                await axios.delete(`${API_BASE_URL}/api/services/${id}`, {
                     headers: { Authorization: `Bearer ${user.token}` }
                 });
                 toast.success('Service deleted');
