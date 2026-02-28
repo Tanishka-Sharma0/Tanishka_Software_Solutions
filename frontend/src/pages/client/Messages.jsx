@@ -25,7 +25,7 @@ const EmployeeMessages = () => {
             const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/messages/conversations`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
-            setConversations(data);
+            setConversations(data || []);
         } catch (error) {
             toast.error('Error fetching conversations');
         }
@@ -63,7 +63,7 @@ const EmployeeMessages = () => {
             if (admin) contacts.push(admin);
             contacts.push(...assignedClients);
 
-            setAvailableContacts(contacts);
+            setAvailableContacts(contacts || []);
 
         } catch (error) {
             console.error('Error fetching contacts:', error);
@@ -78,7 +78,7 @@ const EmployeeMessages = () => {
             const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/messages/${userId}`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
-            setMessages(data);
+            setMessages(data || []);
         } catch (error) {
             toast.error('Error fetching messages');
         }
