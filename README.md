@@ -49,3 +49,13 @@ A comprehensive role-based software company management portal built with MERN st
 - Real-time message updates
 
 ### Service Request Flow
+Admin : email: admin@rahulsoftware.com
+password: Admin@123
+
+employee : email : test.employee@example.com
+password: Test@123
+
+client : email : test.client@example.com
+password: Test@123
+
+still anyone can register by role
