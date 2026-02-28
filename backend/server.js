@@ -1,13 +1,13 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import connectDB from "./config/db.js";
-import authRoutes from "./routes/authRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import serviceRoutes from "./routes/serviceRoutes.js";
-import serviceRequestRoutes from "./routes/serviceRequestRoutes.js";
-import projectRoutes from "./routes/projectRoutes.js";
-import messageRoutes from "./routes/messageRoutes.js";
+import connectDB from "./src/config/db.js";
+import authRoutes from "./src/routes/authRoutes.js";
+import userRoutes from "./src/routes/userRoutes.js";
+import serviceRoutes from "./src/routes/serviceRoutes.js";
+import serviceRequestRoutes from "./src/routes/serviceRequestRoutes.js";
+import projectRoutes from "./src/routes/projectRoutes.js";
+import messageRoutes from "./src/routes/messageRoutes.js";
 
 dotenv.config();
 
