@@ -4,7 +4,7 @@ A comprehensive role-based software company management portal built with MERN st
 
 ## Live Demo
 
-- Frontend: https://rahul-software-solutions.vercel.app
+- Frontend:https://tanishka-software-solutions.vercel.app/
 - Backend API:   https://tanishka-software-solutions-backend.onrender.com
 
 ---
